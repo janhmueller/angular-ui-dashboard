@@ -15,11 +15,11 @@
  */
 'use strict';
 
-angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
+angular.module('ui.dashboard', ['ui.bootstrap', 'gridster']);
 
 angular.module('ui.dashboard')
 
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$uibModal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $uibModal, DashboardState, $log) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
 
     return {
       restrict: 'A',
@@ -61,15 +61,10 @@ angular.module('ui.dashboard')
         // Shallow options
         _.defaults(scope.options, defaults);
 
-        // sortable options
-        var sortableDefaults = {
-          stop: function () {
-            scope.saveDashboard();
-          },
-          handle: '.widget-header',
-          distance: 5
+        // gridster options
+        var gridsterDefaults = {
         };
-        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+        scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
       }],
       link: function (scope) {
@@ -153,7 +148,7 @@ angular.module('ui.dashboard')
           };
           
           // Create the modal
-          var modalInstance = $uibModal.open(options);
+          var modalInstance = $modal.open(options);
           var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
           var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
@@ -288,11 +283,11 @@ angular.module('ui.dashboard')
     };
   }]);
 
-angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {$templateCache.put("components/directives/dashboard/altDashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n                </li>\n              </ul>\n            </span>\n        </div>\n\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-hide=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"Alternative - No Changes\" : \"Save\" }}</button>\n\n        <button ng-click=\"clear();\" ng-hide=\"!widgets.length\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n");
-$templateCache.put("components/directives/dashboard/dashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n                </li>\n              </ul>\n            </span>\n    </div>\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-disabled=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"all saved\" : \"save changes (\" + options.unsavedChangeCount + \")\" }}</button>\n\n        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                        <span ng-click=\"widget.contentStyle.display = widget.contentStyle.display === \'none\' ? \'block\' : \'none\'\" class=\"glyphicon\" ng-class=\"{\'glyphicon-plus\': widget.contentStyle.display === \'none\', \'glyphicon-minus\': widget.contentStyle.display !== \'none\' }\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n                <div ng-if=\"widget.enableVerticalResize\" class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>");
+angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {$templateCache.put("components/directives/dashboard/altDashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n                </li>\n              </ul>\n            </span>\n        </div>\n\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-hide=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"Alternative - No Changes\" : \"Save\" }}</button>\n\n        <button ng-click=\"clear();\" ng-hide=\"!widgets.length\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div data-gridster=\"gridsterOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n");
+$templateCache.put("components/directives/dashboard/dashboard.html","<div>\n	<div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n		<div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n			<span class=\"dropdown\" on-toggle=\"toggled(open)\">\n				<button type=\"button\" class=\"btn btn-primary dropdown-toggle\"\n					data-toggle=\"dropdown\">\n					Button dropdown <span class=\"caret\"></span>\n				</button>\n				<ul class=\"dropdown-menu\" role=\"menu\">\n					<li ng-repeat=\"widget in widgetDefs\"><a href=\"#\"\n						ng-click=\"addWidgetInternal($event, widget);\"\n						class=\"dropdown-toggle\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n					</li>\n				</ul>\n			</span>\n		</div>\n		<div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n			<button ng-repeat=\"widget in widgetDefs\"\n				ng-click=\"addWidgetInternal($event, widget);\" type=\"button\"\n				class=\"btn btn-primary\">{{widget.name}}</button>\n		</div>\n\n		<button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default\n			Widgets</button>\n\n		<button ng-if=\"options.storage && options.explicitSave\"\n			ng-click=\"options.saveDashboard()\" class=\"btn btn-success\"\n			ng-disabled=\"!options.unsavedChangeCount\">{{\n			!options.unsavedChangeCount ? \"all saved\" : \"save changes (\" +\n			options.unsavedChangeCount + \")\" }}</button>\n\n		<button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n	</div>\n\n	<div data-gridster=\"gidsterOptions\" ng-model=\"widgets\"\n		class=\"dashboard-widget-area\">\n		<div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\"\n			class=\"widget-container\" widget>\n			<div class=\"widget panel panel-default\">\n				<div class=\"widget-header panel-heading\">\n					<h3 class=\"panel-title\">\n						<span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\"\n							ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n						<form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\"\n							ng-submit=\"saveTitleEdit(widget)\">\n							<input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n						</form>\n						<span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n						<span ng-click=\"removeWidget(widget);\"\n							class=\"glyphicon glyphicon-remove\"\n							ng-if=\"!options.hideWidgetClose\"></span> <span\n							ng-click=\"openWidgetSettings(widget);\"\n							class=\"glyphicon glyphicon-cog\"\n							ng-if=\"!options.hideWidgetSettings\"></span> <span\n							ng-click=\"widget.contentStyle.display = widget.contentStyle.display === \'none\' ? \'block\' : \'none\'\"\n							class=\"glyphicon\"\n							ng-class=\"{\'glyphicon-plus\': widget.contentStyle.display === \'none\', \'glyphicon-minus\': widget.contentStyle.display !== \'none\' }\"></span>\n					</h3>\n				</div>\n				<div class=\"panel-body widget-content\"\n					ng-style=\"widget.contentStyle\"></div>\n			</div>\n		</div>\n	</div>\n</div>");
 $templateCache.put("components/directives/dashboard/widget-settings-template.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Widget Options <small>{{widget.title}}</small></h3>\n</div>\n\n<div class=\"modal-body\">\n    <form name=\"form\" novalidate class=\"form-horizontal\">\n        <div class=\"form-group\">\n            <label for=\"widgetTitle\" class=\"col-sm-2 control-label\">Title</label>\n            <div class=\"col-sm-10\">\n                <input type=\"text\" class=\"form-control\" name=\"widgetTitle\" ng-model=\"result.title\">\n            </div>\n        </div>\n        <div ng-if=\"widget.settingsModalOptions.partialTemplateUrl\"\n             ng-include=\"widget.settingsModalOptions.partialTemplateUrl\"></div>\n    </form>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n</div>");
 $templateCache.put("components/directives/dashboardLayouts/SaveChangesModal.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Unsaved Changes to \"{{layout.title}}\"</h3>\n</div>\n\n<div class=\"modal-body\">\n    <p>You have {{layout.dashboard.unsavedChangeCount}} unsaved changes on this dashboard. Would you like to save them?</p>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Don\'t Save</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">Save</button>\n</div>");
-$templateCache.put("components/directives/dashboardLayouts/dashboardLayouts.html","<ul ui-sortable=\"sortableOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n        <a ng-click=\"makeLayoutActive(layout)\">\n            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n            </form>\n            <span ng-if=\"!layout.locked\" ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n        </a>\n    </li>\n    <li>\n        <a ng-click=\"createNewLayout()\">\n            <span class=\"glyphicon glyphicon-plus\"></span>\n        </a>\n    </li>\n</ul>\n<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"components/directives/dashboard/dashboard.html\"></div>");}]);
+$templateCache.put("components/directives/dashboardLayouts/dashboardLayouts.html","<ul data-gridster=\"gridsterOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n        <a ng-click=\"makeLayoutActive(layout)\">\n            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n            </form>\n            <span ng-if=\"!layout.locked\" ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n        </a>\n    </li>\n    <li>\n        <a ng-click=\"createNewLayout()\">\n            <span class=\"glyphicon glyphicon-plus\"></span>\n        </a>\n    </li>\n</ul>\n<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"components/directives/dashboard/dashboard.html\"></div>");}]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -436,133 +431,6 @@ angular.module('ui.dashboard')
         return templateString;
       };
 
-      $scope.grabResizer = function(e) {
-
-        var widget = $scope.widget;
-        var widgetElm = $element.find('.widget');
-
-        // ignore middle- and right-click
-        if (e.which !== 1) {
-          return;
-        }
-
-        e.stopPropagation();
-        e.originalEvent.preventDefault();
-
-        // get the starting horizontal position
-        var initX = e.clientX;
-        // console.log('initX', initX);
-
-        // Get the current width of the widget and dashboard
-        var pixelWidth = widgetElm.width();
-        var pixelHeight = widgetElm.height();
-        var widgetStyleWidth = widget.containerStyle.width;
-        var widthUnits = widget.widthUnits;
-        var unitWidth = parseFloat(widgetStyleWidth);
-
-        // create marquee element for resize action
-        var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-        widgetElm.append($marquee);
-
-        // determine the unit/pixel ratio
-        var transformMultiplier = unitWidth / pixelWidth;
-
-        // updates marquee with preview of new width
-        var mousemove = function(e) {
-          var curX = e.clientX;
-          var pixelChange = curX - initX;
-          var newWidth = pixelWidth + pixelChange;
-          $marquee.css('width', newWidth + 'px');
-        };
-
-        // sets new widget width on mouseup
-        var mouseup = function(e) {
-          // remove listener and marquee
-          jQuery($window).off('mousemove', mousemove);
-          $marquee.remove();
-
-          // calculate change in units
-          var curX = e.clientX;
-          var pixelChange = curX - initX;
-          var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
-
-          // add to initial unit width
-          var newWidth = unitWidth * 1 + unitChange;
-          widget.setWidth(newWidth, widthUnits);
-          $scope.$emit('widgetChanged', widget);
-          $scope.$apply();
-          $scope.$broadcast('widgetResized', {
-            width: newWidth
-          });
-        };
-
-        jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
-      };
-
-      //TODO refactor
-      $scope.grabSouthResizer = function(e) {
-        var widgetElm = $element.find('.widget');
-
-        // ignore middle- and right-click
-        if (e.which !== 1) {
-          return;
-        }
-
-        e.stopPropagation();
-        e.originalEvent.preventDefault();
-
-        // get the starting horizontal position
-        var initY = e.clientY;
-        // console.log('initX', initX);
-
-        // Get the current width of the widget and dashboard
-        var pixelWidth = widgetElm.width();
-        var pixelHeight = widgetElm.height();
-
-        // create marquee element for resize action
-        var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-        widgetElm.append($marquee);
-
-        // updates marquee with preview of new height
-        var mousemove = function(e) {
-          var curY = e.clientY;
-          var pixelChange = curY - initY;
-          var newHeight = pixelHeight + pixelChange;
-          $marquee.css('height', newHeight + 'px');
-        };
-
-        // sets new widget width on mouseup
-        var mouseup = function(e) {
-          // remove listener and marquee
-          jQuery($window).off('mousemove', mousemove);
-          $marquee.remove();
-
-          // calculate height change
-          var curY = e.clientY;
-          var pixelChange = curY - initY;
-
-          //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
-          var widgetContainer = widgetElm.find('.widget-content');
-
-          var diff = pixelChange;
-          var height = parseInt(widgetContainer.css('height'), 10);
-          var newHeight = (height + diff);
-
-          //$scope.widget.style.height = newHeight + 'px';
-
-          $scope.widget.setHeight(newHeight + 'px');
-
-          $scope.$emit('widgetChanged', $scope.widget);
-          $scope.$apply(); // make AngularJS to apply style changes
-
-          $scope.$broadcast('widgetResized', {
-            height: newHeight
-          });
-        };
-
-        jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
-      };
-
       // replaces widget title with input
       $scope.editTitle = function(widget) {
         var widgetElm = $element.find('.widget');
@@ -614,8 +482,8 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
-    function(LayoutStorage, $timeout, $uibModal) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal',
+    function(LayoutStorage, $timeout, $modal) {
       return {
         scope: true,
         templateUrl: function(element, attr) {
@@ -650,7 +518,7 @@ angular.module('ui.dashboard')
             var current = layoutStorage.getActiveLayout();
 
             if (current && current.dashboard.unsavedChangeCount) {
-              var modalInstance = $uibModal.open({
+              var modalInstance = $modal.open({
                 templateUrl: 'template/SaveChangesModal.html',
                 resolve: {
                   layout: function() {
@@ -732,13 +600,13 @@ angular.module('ui.dashboard')
             }
           };
 
-          var sortableDefaults = {
+          var gridsterDefaults = {
             stop: function() {
               scope.options.saveLayouts();
             },
             distance: 5
           };
-          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+          scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
         }
       };
     }
@@ -762,17 +630,17 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
+  .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', 'layout', function ($scope, $modalInstance, layout) {
     
     // add layout to scope
     $scope.layout = layout;
 
     $scope.ok = function () {
-      $uibModalInstance.close();
+      $modalInstance.close();
     };
 
     $scope.cancel = function () {
-      $uibModalInstance.dismiss();
+      $modalInstance.dismiss();
     };
   }]);
 /*
@@ -794,7 +662,7 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
+  .controller('WidgetSettingsCtrl', ['$scope', '$modalInstance', 'widget', function ($scope, $modalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -802,11 +670,11 @@ angular.module('ui.dashboard')
     $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
-      $uibModalInstance.close($scope.result);
+      $modalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
-      $uibModalInstance.dismiss('cancel');
+      $modalInstance.dismiss('cancel');
     };
   }]);
 /*
@@ -968,10 +836,11 @@ angular.module('ui.dashboard')
       def = convertToDefinition(def);
       this.push(def);
       this.map[def.name] = def;
-    }
+    };
 
     return WidgetDefCollection;
   });
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *

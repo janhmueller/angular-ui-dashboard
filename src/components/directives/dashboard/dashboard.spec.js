@@ -22,7 +22,7 @@ describe('Directive: dashboard', function () {
 
   // mock UI Sortable
   beforeEach(function () {
-    angular.module('ui.sortable', []);
+    angular.module('gridster', []);
   });
 
   // load the directive's module
@@ -64,7 +64,7 @@ describe('Directive: dashboard', function () {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
-      sortableOptions: {
+      gridsterOptions: {
         testProperty: 'foobar'
       }
     };
@@ -80,12 +80,12 @@ describe('Directive: dashboard', function () {
     var toolbar = element.find('.btn-toolbar');
     expect(toolbar.length).toEqual(1);
   });
-
-  it('should have UI.Sortable directive', function () {
+/*
+  it('should have gridster directive', function () {
     var widgetArea = element.find('.dashboard-widget-area');
-    expect(widgetArea.attr('ui-sortable')).toBeDefined();
+    expect(widgetArea.attr('gridster')).toBeDefined();
   });
-
+*/
   it('should render widgets', function () {
     var widgets = element.find('.widget');
     expect(widgets.length).toEqual(2);
@@ -117,16 +117,17 @@ describe('Directive: dashboard', function () {
     $templateCache.put(
       'myCustomTemplate.html',
         '<div>' +
-        '<div ui-sortable="sortableOptions" ng-model="widgets">' +
-        '<div ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container custom-widget" widget>' +
+        '<div gridster="gridsterOptions" ng-model="widgets">' +
+	'<ul>'+
+        '<li ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container custom-widget" widget>' +
         '<h3 class="widget-header">' +
         '{{widget.title}}' +
         '<span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>' +
         '<span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings"></span>' +
         '</h3>' +
         '<div class="widget-content"></div>' +
-        '<div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>' +
-        '</div>' +
+	'</li>'+
+        '</ul>' +
         '</div>' +
         '</div>'
     );
@@ -155,22 +156,17 @@ describe('Directive: dashboard', function () {
     expect(DashboardState.prototype.save).not.toHaveBeenCalled();
   }));
 
-  describe('the sortableOptions', function() {
+  describe('the gridsterOptions', function() {
 
     it('should exist', function() {
-      expect(typeof childScope.sortableOptions).toEqual('object');
+      expect(typeof childScope.gridsterOptions).toEqual('object');
     });
 
     it('should be possible to be extendable from the dashboardOptions', function() {
-      expect(childScope.sortableOptions.testProperty).toEqual('foobar');
+      expect(childScope.gridsterOptions.testProperty).toEqual('foobar');
     })
 
-    it('should have a stop function that calls $scope.saveDashboard', function() {
-      expect(typeof childScope.sortableOptions.stop).toEqual('function');
-      spyOn(childScope, 'saveDashboard');
-      childScope.sortableOptions.stop();
-      expect(childScope.saveDashboard).toHaveBeenCalled();
-    });
+
   });
 
   describe('the addWidget function', function() {
@@ -564,7 +560,7 @@ describe('Directive: dashboard', function () {
         widgetButtons: true,
         widgetDefinitions: widgetDefinitions,
         defaultWidgets: defaultWidgets,
-        sortableOptions: {
+        gridsterOptions: {
           testProperty: 'foobar'
         },
         settingsModalOptions: {
@@ -611,7 +607,7 @@ describe('Directive: dashboard', function () {
         widgetButtons: true,
         widgetDefinitions: widgetDefinitions,
         defaultWidgets: defaultWidgets,
-        sortableOptions: {
+        gridsterOptions: {
           testProperty: 'foobar'
         },
         settingsModalOptions: {

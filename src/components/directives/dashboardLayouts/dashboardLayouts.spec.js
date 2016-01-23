@@ -22,7 +22,7 @@ describe('Directive: dashboard-layouts', function () {
 
   // mock UI Sortable
   beforeEach(function () {
-    angular.module('ui.sortable', []);
+    angular.module('gridster', []);
   });
 
   // load the directive's module

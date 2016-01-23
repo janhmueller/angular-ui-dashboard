@@ -15,7 +15,7 @@
  */
 'use strict';
 
-angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
+angular.module('ui.dashboard', ['ui.bootstrap', 'gridster']);
 
 angular.module('ui.dashboard')
 
@@ -61,15 +61,10 @@ angular.module('ui.dashboard')
         // Shallow options
         _.defaults(scope.options, defaults);
 
-        // sortable options
-        var sortableDefaults = {
-          stop: function () {
-            scope.saveDashboard();
-          },
-          handle: '.widget-header',
-          distance: 5
+        // gridster options
+        var gridsterDefaults = {
         };
-        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+        scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
       }],
       link: function (scope) {

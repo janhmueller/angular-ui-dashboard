@@ -93,48 +93,6 @@ describe('Controller: DashboardWidgetCtrl', function() {
 
   });
 
-  describe('the grabResizer method', function() {
-
-    var evt, widget, WidgetModel;
-
-    beforeEach(inject(function (_WidgetModel_) {
-      WidgetModel = _WidgetModel_;
-    }));
-
-    beforeEach(function() {
-      evt = {
-        stopPropagation: jasmine.createSpy('stopPropagation'),
-        originalEvent: {
-          preventDefault: jasmine.createSpy('preventDefault')
-        },
-        clientX: 100,
-        which: 1
-      };
-      $scope.widget = widget = new WidgetModel({
-        style: {
-          width: '30%'
-        }
-      });
-    });
-
-    it('should do nothing if event.which is not 1 (left click)', function() {
-      evt.which = 2;
-      $scope.grabResizer(evt);
-      expect(evt.stopPropagation).not.toHaveBeenCalled();
-    });
-
-    it('should call stopPropagation and preventDefault', function() {
-      $scope.grabResizer(evt);
-      expect(evt.stopPropagation).toHaveBeenCalled();
-      expect(evt.originalEvent.preventDefault).toHaveBeenCalled();
-    });
-
-    it('should add a .widget-resizer-marquee element to the .widget element', function() {
-      $scope.grabResizer(evt);
-      expect($element.find('.widget-resizer-marquee').length).toBeGreaterThan(0);
-    });
-
-  });
 
   describe('the editTitle method', function() {
     

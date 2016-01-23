@@ -135,13 +135,13 @@ angular.module('ui.dashboard')
             }
           };
 
-          var sortableDefaults = {
+          var gridsterDefaults = {
             stop: function() {
               scope.options.saveLayouts();
             },
             distance: 5
           };
-          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+          scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
         }
       };
     }

@@ -4,7 +4,7 @@ describe('Factory: LayoutStorage', function () {
 
   // mock UI Sortable
   beforeEach(function () {
-    angular.module('ui.sortable', []);
+    angular.module('gridster', []);
   });
 
   // load the service's module
