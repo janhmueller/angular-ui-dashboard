@@ -63,6 +63,25 @@ angular.module('ui.dashboard')
 
         // gridster options
         var gridsterDefaults = {
+    			resizable : {
+    				enabled : true,
+    				resize : function(event, element, widget) {
+    					var newHeight = element[0].offsetHeight;
+    					var newWidth = element[0].clientWidth;
+    					$scope.$broadcast('resizingWidget', {
+    						height : newHeight,
+    						width : newWidth
+    					});
+    					// $scope.$emit('widgetChanged', widget);
+    				}
+    			},
+    			draggable : {
+    				enabled : true, 
+    				handle : '.widget-header', 
+    				stop : function(event, element, widget) {
+    					$scope.$emit('widgetChanged', widget);
+    				}
+    			}
         };
         scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
