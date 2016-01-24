@@ -108,7 +108,7 @@ angular.module('ui.dashboard')
       };
  
       if($scope.gridsterItem) {
-        $scope.watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
+        $scope.$watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
 			$scope.$broadcast('widgetResized', {
 				height : $scope.gridsterItem.getElementSizeY(),
 				width : $scope.gridsterItem.getElementSizeX()
