@@ -68,7 +68,7 @@ angular.module('ui.dashboard')
     				resize : function(event, element, widget) {
     					var newHeight = element[0].offsetHeight;
     					var newWidth = element[0].clientWidth;
-    					$scope.$broadcast('resizingWidget', {
+    					scope.$broadcast('resizingWidget', {
     						height : newHeight,
     						width : newWidth
     					});
@@ -79,7 +79,7 @@ angular.module('ui.dashboard')
     				enabled : true, 
     				handle : '.widget-header', 
     				stop : function(event, element, widget) {
-    					$scope.$emit('widgetChanged', widget);
+    					scope.$emit('widgetChanged', widget);
     				}
     			}
         };
