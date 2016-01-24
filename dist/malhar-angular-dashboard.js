@@ -482,22 +482,14 @@ angular.module('ui.dashboard')
       };
  
       
-      $scope.$on('gridster-item-resized', function(item) {
+      $scope.$on('gridster-item-resized', function(event, item) {
 			$scope.$broadcast('widgetResized', {
 				height : item.getElementSizeY(),
 				width : item.getElementSizeX()
 			});
 			$scope.$emit('widgetChanged', $scope.widget);
     	});
-      
-      /*
-      if($scope.gridsterItem) {
-        $scope.$watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
- 
-        });
-      }
-      */
-    }
+     }
   ]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
