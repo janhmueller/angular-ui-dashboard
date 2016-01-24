@@ -481,16 +481,22 @@ angular.module('ui.dashboard')
         return element.find('.widget-content');
       };
  
-      if($scope.gridsterItem) {
-        $scope.$watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
+      
+      $scope.$on('gridster-item-resized', function(item) {
 			$scope.$broadcast('widgetResized', {
-				height : $scope.gridsterItem.getElementSizeY(),
-				width : $scope.gridsterItem.getElementSizeX()
+				height : item.getElementSizeY(),
+				width : item.getElementSizeX()
 			});
 			$scope.$emit('widgetChanged', $scope.widget);
+    	});
+      
+      /*
+      if($scope.gridsterItem) {
+        $scope.$watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
  
         });
       }
+      */
     }
   ]);
 /*
