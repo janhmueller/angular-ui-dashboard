@@ -106,14 +106,16 @@ angular.module('ui.dashboard')
         // widget placeholder is the first (and only) child of .widget-content
         return element.find('.widget-content');
       };
-      
-      $scope.watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
+ 
+      if($scope.gridsterItem) {
+        $scope.watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
 			$scope.$broadcast('widgetResized', {
 				height : $scope.gridsterItem.getElementSizeY(),
 				width : $scope.gridsterItem.getElementSizeX()
 			});
 			$scope.$emit('widgetChanged', $scope.widget);
  
-      });
+        });
+      }
     }
   ]);

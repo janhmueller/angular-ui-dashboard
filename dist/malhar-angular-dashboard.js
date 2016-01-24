@@ -63,6 +63,25 @@ angular.module('ui.dashboard')
 
         // gridster options
         var gridsterDefaults = {
+    			resizable : {
+    				enabled : true,
+    				resize : function(event, element, widget) {
+    					var newHeight = element[0].offsetHeight;
+    					var newWidth = element[0].clientWidth;
+    					$scope.$broadcast('resizingWidget', {
+    						height : newHeight,
+    						width : newWidth
+    					});
+    					// $scope.$emit('widgetChanged', widget);
+    				}
+    			},
+    			draggable : {
+    				enabled : true, 
+    				handle : '.widget-header', 
+    				stop : function(event, element, widget) {
+    					$scope.$emit('widgetChanged', widget);
+    				}
+    			}
         };
         scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
@@ -461,6 +480,17 @@ angular.module('ui.dashboard')
         // widget placeholder is the first (and only) child of .widget-content
         return element.find('.widget-content');
       };
+ 
+      if($scope.gridsterItem) {
+        $scope.watchGroup(["gridsterItem.sizeX", "gridsterItem.sizeY"], function(sizeX) {
+			$scope.$broadcast('widgetResized', {
+				height : $scope.gridsterItem.getElementSizeY(),
+				width : $scope.gridsterItem.getElementSizeX()
+			});
+			$scope.$emit('widgetChanged', $scope.widget);
+ 
+        });
+      }
     }
   ]);
 /*
@@ -695,95 +725,113 @@ angular.module('ui.dashboard')
 
 'use strict';
 
-angular.module('ui.dashboard')
-  .factory('WidgetModel', ["$log", function ($log) {
+angular
+		.module('ui.dashboard')
+		.factory(
+				'WidgetModel',
+				["$log", function($log) {
 
-    function defaults() {
-      return {
-        title: 'Widget',
-        style: {},
-        size: {},
-        enableVerticalResize: true,
-        containerStyle: { width: '33%' }, // default width
-        contentStyle: {}
-      };
-    };
+					function defaults() {
+						return {
+							title : 'Widget',
+							style : {},
+							size : {},
+							enableVerticalResize : true,
+							containerStyle : {
+								width : '33%'
+							}, // default width
+							contentStyle : {}
+						};
+					}
+					;
 
-    // constructor for widget model instances
-    function WidgetModel(widgetDefinition, overrides) {
-  
-      // Extend this with the widget definition object with overrides merged in (deep extended).
-      angular.extend(this, defaults(), _.merge(angular.copy(widgetDefinition), overrides));
+					// constructor for widget model instances
+					function WidgetModel(widgetDefinition, overrides) {
 
-      this.updateContainerStyle(this.style);
+						// Extend this with the widget definition object with
+						// overrides merged in (deep extended).
+						angular.extend(this, defaults(), _.merge(angular
+								.copy(widgetDefinition), overrides));
 
-      if (!this.templateUrl && !this.template && !this.directive) {
-        this.directive = widgetDefinition.name;
-      }
+						this.updateContainerStyle(this.style);
 
-      if (this.size && _.has(this.size, 'height')) {
-        this.setHeight(this.size.height);
-      }
+						if (!this.templateUrl && !this.template
+								&& !this.directive) {
+							this.directive = widgetDefinition.name;
+						}
 
-      if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
-        this.setWidth(this.style.width);
-      }
+						if (this.size && _.has(this.size, 'height')) {
+							this.setHeight(this.size.height);
+						}
 
-      if (this.size && _.has(this.size, 'width')) {
-        this.setWidth(this.size.width);
-      }
-    }
+						if (this.style && _.has(this.style, 'width')) { // TODO
+																		// deprecate
+																		// style
+																		// attribute
+							this.setWidth(this.style.width);
+						}
 
-    WidgetModel.prototype = {
-      // sets the width (and widthUnits)
-      setWidth: function (width, units) {
-        width = width.toString();
-        units = units || width.replace(/^[-\.\d]+/, '') || '%';
+						if (this.size && _.has(this.size, 'width')) {
+							this.setWidth(this.size.width);
+						}
+					}
 
-        this.widthUnits = units;
-        width = parseFloat(width);
+					WidgetModel.prototype = {
+						// sets the width (and widthUnits)
+						setWidth : function(width, units) {
+							width = width.toString();
+							units = units || width.replace(/^[-\.\d]+/, '')
+									|| '%';
 
-        if (width < 0 || isNaN(width)) {
-          $log.warn('malhar-angular-dashboard: setWidth was called when width was ' + width);
-          return false;
-        }
+							this.widthUnits = units;
+							width = parseFloat(width);
 
-        if (units === '%') {
-          width = Math.min(100, width);
-          width = Math.max(0, width);
-        }
+							if (width < 0 || isNaN(width)) {
+								$log
+										.warn('malhar-angular-dashboard: setWidth was called when width was '
+												+ width);
+								return false;
+							}
 
-        this.containerStyle.width = width + '' + units;
+							if (units === '%') {
+								width = Math.min(100, width);
+								width = Math.max(0, width);
+							}
 
-        this.updateSize(this.containerStyle);
+							this.containerStyle.width = width + '' + units;
 
-        return true;
-      },
+							this.updateSize(this.containerStyle);
 
-      setHeight: function (height) {
-        this.contentStyle.height = height;
-        this.updateSize(this.contentStyle);
-      },
+							return true;
+						},
 
-      setStyle: function (style) {
-        this.style = style;
-        this.updateContainerStyle(style);
-      },
+						setHeight : function(height) {
+							this.contentStyle.height = height;
+							this.updateSize(this.contentStyle);
+						},
 
-      updateSize: function (size) {
-        angular.extend(this.size, size);
-      },
+						setStyle : function(style) {
+							this.style = style;
+							this.updateContainerStyle(style);
+						},
 
-      updateContainerStyle: function (style) {
-        angular.extend(this.containerStyle, style);
-      },
-      serialize: function() {
-        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
-      }
-    };
+						updateSize : function(size) {
+							angular.extend(this.size, size);
+						},
 
-    return WidgetModel;
-  }]);
+						updateContainerStyle : function(style) {
+							angular.extend(this.containerStyle, style);
+						},
+						serialize : function() {
+							return _.pick(this, [ 'title', 'name', 'style',
+									'size', 'dataModelOptions', 'attrs',
+									'storageHash', 'sizeX', 'sizeY', 'row',
+									'col' ]);
+						}
+					};
+
+					return WidgetModel;
+				}]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
