@@ -108,7 +108,7 @@ angular.module('ui.dashboard')
       };
  
       
-      $scope.$on('gridster-item-resized', function(event, item) {
+      $scope.$on('gridster-item-transition-end', function(event, item) {
 			$scope.$broadcast('widgetResized', {
 				height : item.getElementSizeY(),
 				width : item.getElementSizeX()
