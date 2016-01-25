@@ -19,7 +19,7 @@ angular.module('ui.dashboard', ['ui.bootstrap', 'gridster']);
 
 angular.module('ui.dashboard')
 
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$uibModal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $uibModal, DashboardState, $log) {
 
     return {
       restrict: 'A',
@@ -153,7 +153,7 @@ angular.module('ui.dashboard')
          */
         scope.openWidgetSettings = function (widget) {
 
-          // Set up $modal options 
+          // Set up $uibModal options 
           var options = _.defaults(
             { scope: scope },
             widget.settingsModalOptions,
@@ -167,7 +167,7 @@ angular.module('ui.dashboard')
           };
           
           // Create the modal
-          var modalInstance = $modal.open(options);
+          var modalInstance = $uibModal.open(options);
           var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
           var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
@@ -510,8 +510,8 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal',
-    function(LayoutStorage, $timeout, $modal) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
+    function(LayoutStorage, $timeout, $uibModal) {
       return {
         scope: true,
         templateUrl: function(element, attr) {
@@ -546,7 +546,7 @@ angular.module('ui.dashboard')
             var current = layoutStorage.getActiveLayout();
 
             if (current && current.dashboard.unsavedChangeCount) {
-              var modalInstance = $modal.open({
+              var modalInstance = $uibModal.open({
                 templateUrl: 'template/SaveChangesModal.html',
                 resolve: {
                   layout: function() {
@@ -658,17 +658,17 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', 'layout', function ($scope, $modalInstance, layout) {
+  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
     
     // add layout to scope
     $scope.layout = layout;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss();
+      $uibModalInstance.dismiss();
     };
   }]);
 /*
@@ -690,7 +690,7 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetSettingsCtrl', ['$scope', '$modalInstance', 'widget', function ($scope, $modalInstance, widget) {
+  .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -698,11 +698,11 @@ angular.module('ui.dashboard')
     $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
-      $modalInstance.close($scope.result);
+      $uibModalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   }]);
 /*
