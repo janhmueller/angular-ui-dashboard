@@ -56,11 +56,11 @@ Widget Library using the dashboard [[source code](https://github.com/DataTorrent
 Build
 -----
 
- Project is built with Grunt.
+ Project is built with Gulp.
 
  ``` bash
-    $ npm install -g grunt-cli
-    $ grunt
+    $ npm install -g gulp
+    $ gulp
  ```
 
 Requirements
@@ -80,14 +80,15 @@ Getting Started
 
 See [simple demo](demo) (two widgets) for a quick start.
 
-Running demo with Grunt.
+Running demo.
 
  ``` bash
     $ bower install
-    $ grunt demo
+    $ gulp build:demo
+    $ gulp serve
  ```
 
-Application will be available at http://127.0.0.1:9000
+Application will be available at http://localhost:3000/
 
 ### download
 
@@ -104,11 +105,11 @@ Download the zip of this repo and use the files in the `dist` folder.
 
 ### include
 
-Load `dist/angular-ui-dashboard.js` and `dist/angular-ui-dashboard.css` in your html:
+Load `dist/malhar-angular-dashboard.js` and `dist/malhar-angular-dashboard.css` in your html:
 
 ```HTML
-<link rel="stylesheet" href="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.css">
-<script src="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.js"></script>
+<link rel="stylesheet" href="bower_components/malhar-angular-dashboard/dist/malhar-angular-dashboard.css">
+<script src="bower_components/malhar-angular-dashboard/dist/malhar-angular-dashboard.js"></script>
 ```
 
 Also be sure to add it to your apps dependency list:
@@ -163,7 +164,7 @@ It is possible to use your own template for the dashboard and widget markup (rep
 |  sortableOptions | Object | n/a | no | Allows to specify the various [sortable options](http://api.jqueryui.com/sortable/#options) of the underlying jQuery UI Sortable.
 | hideWidgetSettings | Boolean | false | no | If true, the cog button in the top right corner of each widget will not be present. |
 | hideWidgetClose    | Boolean | false | no | If true, the "x" button in the top right corner of each widget will not be present. |
-| settingsModalOptions | Object | see below | no | The options object to be passed to the `$modal` service for widget settings. See the **Custom Widget Settings** section below. |
+| settingsModalOptions | Object | see below | no | The options object to be passed to the `$uibModal` service for widget settings. See the **Custom Widget Settings** section below. |
 | onSettingsClose      | Function | see below | no | The success callback for when a widget settings dialog is closed by the user. See the **Custom Widget Settings** section below. |
 | onSettingsDismiss    | Function | see below | no | The error callback for when a widget settings dialog is dismissed by the user. See the **Custom Widget Settings** section below. |
 
@@ -305,18 +306,18 @@ Custom Widget Settings
 Unless the `hideWidgetSettings` option is set to true on the dashboard options, each widget by default has a "cog" button in the top right corner that, when clicked, opens up a "modal" (dialog box) with information about the widget and controls to change the title. As of this writing, the default functionality is very minimal; only the widget's title can be changed from this modal. In many cases, you will want to replace and extend the default functionality. In rarer cases, you may even want to override the functionality for a specific widget class. Both of these use-cases are possible using this module.
 
 ### Principles
-To understand how these overrides work, it is beneficial to understand what's happening behind the scenes (if you are looking in the code, the relevant snippet is located in `src/directives/dashboard.js`, in the method `openWidgetSettings`). The widget settings modal uses a service called `$modal` from the [angular-bootstrap](http://angular-ui.github.io/bootstrap) project. Specifically, the dashboard calls `$modal.open(options)` where `options` is an object containing (ehem) options for the $modal service to use. The relevant options for understanding widget settings are:
+To understand how these overrides work, it is beneficial to understand what's happening behind the scenes (if you are looking in the code, the relevant snippet is located in `src/directives/dashboard.js`, in the method `openWidgetSettings`). The widget settings modal uses a service called `$uibModal` from the [angular-bootstrap](http://angular-ui.github.io/bootstrap) project. Specifically, the dashboard calls `$uibModal.open(options)` where `options` is an object containing (ehem) options for the $uibModal service to use. The relevant options for understanding widget settings are:
  
  - `templateUrl`: Should point to the template to be used to build the modal markup. The default in this dashboard is `template/widget-settings-template.html`.
  - `controller`: A string that points to a registered angular controller. This controller handles the behaviors in the modal. The default in this dashboard is `WidgetSettingsCtrl`, located at `src/controllers/widgetSettingsCtrl.js`.
- - `resolve`: An object where key is an injectable name and value is a function that returns the injected value in the controller. In the case of this dashboard, this property is always set to resolve the widget model so it can be injected into the `$modal` controller.
+ - `resolve`: An object where key is an injectable name and value is a function that returns the injected value in the controller. In the case of this dashboard, this property is always set to resolve the widget model so it can be injected into the `$uibModal` controller.
 
-For a full list of options, visit the [angular-bootstrap](http://angular-ui.github.io/bootstrap) website and scroll to the `$modal` service section.
+For a full list of options, visit the [angular-bootstrap](http://angular-ui.github.io/bootstrap) website and scroll to the `$uibModal` service section.
 
-When the user is done viewing the modal, it is either **dismissed** (the user presses "cancel", meaning he wants to discard any changes made) or it is **closed** (the user presses "ok", meaning he wants to save his changes). These two outcomes are handled by a `$modalInstance` promise that is either resolved or rejected (for information on promises, see the [angular documentation](https://docs.angularjs.org/api/ng/service/$q)).
+When the user is done viewing the modal, it is either **dismissed** (the user presses "cancel", meaning he wants to discard any changes made) or it is **closed** (the user presses "ok", meaning he wants to save his changes). These two outcomes are handled by a `$uibModalInstance` promise that is either resolved or rejected (for information on promises, see the [angular documentation](https://docs.angularjs.org/api/ng/service/$q)).
 
 ### Overriding Widget Settings for Every Widget
-To override the `options` object that gets passed to `$modal.open(options)` for all widgets (i.e. you want to provide a different default templateUrl and/or controller for all widget settings), you may assign an options object to the `settingsModalOptions` key in your dashboard options:
+To override the `options` object that gets passed to `$uibModal.open(options)` for all widgets (i.e. you want to provide a different default templateUrl and/or controller for all widget settings), you may assign an options object to the `settingsModalOptions` key in your dashboard options:
 
     // ... in your controller 
     $scope.myDashboardOptions = {
@@ -325,15 +326,15 @@ To override the `options` object that gets passed to `$modal.open(options)` for 
       settingsModalOptions: {
         templateUrl: 'my/custom/widgetSettingsTemplate.html',
         controller: 'MyCustomWidgetSettingsCtrl' // defined elsewhere,
-        // other $modal.open options can go here, eg:
+        // other $uibModal.open options can go here, eg:
         // backdrop: false,
         // keyboard: false
       }
     };
 
-**NOTE:** The `resolve` object gets provided to the `$modal` options by the dashboard, and contains only the widget instance as `widget`. If you put `resolve` in `settingsModalOptions` it will be ignored.
+**NOTE:** The `resolve` object gets provided to the `$uibModal` options by the dashboard, and contains only the widget instance as `widget`. If you put `resolve` in `settingsModalOptions` it will be ignored.
 
-To override the callbacks that get passed to the `$modalInstance` promise, assign functions to the `onSettingsClose` and `onSettingsDismiss` keys on your dashboard options:
+To override the callbacks that get passed to the `$uibModalInstance` promise, assign functions to the `onSettingsClose` and `onSettingsDismiss` keys on your dashboard options:
 
     // ... in your controller 
     $scope.myDashboardOptions = {
@@ -379,7 +380,7 @@ Overriding widget settings for a specific widget is almost exactly like overridi
 
 Dashboard Layouts
 -----------------
-One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `grunt demo` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
+One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `gulp serve` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
 
 ```HTML
 <div dashboard-layouts="layoutOptions"></div>

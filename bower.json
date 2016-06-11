@@ -1,12 +1,24 @@
 {
   "name": "malhar-angular-dashboard",
   "version": "2.0.0",
+  "ignore": [
+    "docs",
+    "e2e",
+    "gulp",
+    "src",
+    "test"
+  ],
   "dependencies": {
-    "bootstrap": "latest",
-    "angular-bootstrap": "latest",
-    "angular": "latest",
-    "angular-gridster": "latest",
-    "lodash": "~3.1"
+    "angular": "~1.4",
+    "angular-bootstrap": ">=1.0.0",
+    "angular-ui-sortable": "~0.13.4",
+    "bootstrap": "~3.3.6",
+    "lodash": "~4.5.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4",
+    "angular-route": "~1.3",
+    "angular-markdown-directive": "~0.3.1"
   },
   "main": [
     "dist/malhar-angular-dashboard.css",
@@ -23,6 +35,6 @@
     }
   },
   "resolutions": {
-    "angular": "latest"
+    "angular": "~1.4"
   }
 }
