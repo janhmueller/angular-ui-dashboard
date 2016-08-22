@@ -16,110 +16,97 @@
 
 'use strict';
 
-angular
-		.module('ui.dashboard')
-		.factory(
-				'WidgetModel',
-				function($log) {
+angular.module('ui.dashboard')
+  .factory('WidgetModel', function ($log) {
 
-					function defaults() {
-						return {
-							title : 'Widget',
-							style : {},
-							size : {},
-							enableVerticalResize : true,
-							containerStyle : {
-								width : '33%'
-							}, // default width
-							contentStyle : {}
-						};
-					}
-					;
+    function defaults() {
+      return {
+        title: 'Widget',
+        style: {},
+        size: {},
+        enableVerticalResize: true,
+        containerStyle: { width: '33%' }, // default width
+        contentStyle: {}
+      };
+    };
 
-					// constructor for widget model instances
-					function WidgetModel(widgetDefinition, overrides) {
+    // constructor for widget model instances
+    function WidgetModel(widgetDefinition, overrides) {
+  
+      // Extend this with the widget definition object with overrides merged in (deep extended).
+      angular.extend(this, defaults(), _.merge(angular.copy(widgetDefinition), overrides));
 
-						// Extend this with the widget definition object with
-						// overrides merged in (deep extended).
-						angular.extend(this, defaults(), _.merge(angular
-								.copy(widgetDefinition), overrides));
+      this.updateContainerStyle(this.style);
 
-						this.updateContainerStyle(this.style);
+      if (!this.templateUrl && !this.template && !this.directive) {
+        this.directive = widgetDefinition.name;
+      }
 
-						if (!this.templateUrl && !this.template
-								&& !this.directive) {
-							this.directive = widgetDefinition.name;
-						}
+      if (this.size && _.has(this.size, 'height')) {
+        this.setHeight(this.size.height);
+      }
 
-						if (this.size && _.has(this.size, 'height')) {
-							this.setHeight(this.size.height);
-						}
+      if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
+        this.setWidth(this.style.width);
+      }
 
-						if (this.style && _.has(this.style, 'width')) { // TODO
-																		// deprecate
-																		// style
-																		// attribute
-							this.setWidth(this.style.width);
-						}
+      if (this.size && _.has(this.size, 'width')) {
+        this.setWidth(this.size.width);
+      }
+    }
 
-						if (this.size && _.has(this.size, 'width')) {
-							this.setWidth(this.size.width);
-						}
-					}
+    WidgetModel.prototype = {
+      // sets the width (and widthUnits)
+      setWidth: function (width, units) {
+        width = width.toString();
+        units = units || width.replace(/^[-\.\d]+/, '') || '%';
 
-					WidgetModel.prototype = {
-						// sets the width (and widthUnits)
-						setWidth : function(width, units) {
-							width = width.toString();
-							units = units || width.replace(/^[-\.\d]+/, '')
-									|| '%';
+        this.widthUnits = units;
+        width = parseFloat(width);
 
-							this.widthUnits = units;
-							width = parseFloat(width);
+        // check with min width if set, unit refer to width's unit
+        if (this.size && _.has(this.size, 'minWidth')) {
+          width = _.max([parseFloat(this.size.minWidth), width]);
+        }
 
-							if (width < 0 || isNaN(width)) {
-								$log
-										.warn('malhar-angular-dashboard: setWidth was called when width was '
-												+ width);
-								return false;
-							}
+        if (width < 0 || isNaN(width)) {
+          $log.warn('malhar-angular-dashboard: setWidth was called when width was ' + width);
+          return false;
+        }
 
-							if (units === '%') {
-								width = Math.min(100, width);
-								width = Math.max(0, width);
-							}
+        if (units === '%') {
+          width = Math.min(100, width);
+          width = Math.max(0, width);
+        }
 
-							this.containerStyle.width = width + '' + units;
+        this.containerStyle.width = width + '' + units;
 
-							this.updateSize(this.containerStyle);
+        this.updateSize(this.containerStyle);
 
-							return true;
-						},
+        return true;
+      },
 
-						setHeight : function(height) {
-							this.contentStyle.height = height;
-							this.updateSize(this.contentStyle);
-						},
+      setHeight: function (height) {
+        this.contentStyle.height = height;
+        this.updateSize(this.contentStyle);
+      },
 
-						setStyle : function(style) {
-							this.style = style;
-							this.updateContainerStyle(style);
-						},
+      setStyle: function (style) {
+        this.style = style;
+        this.updateContainerStyle(style);
+      },
 
-						updateSize : function(size) {
-							angular.extend(this.size, size);
-						},
+      updateSize: function (size) {
+        angular.extend(this.size, size);
+      },
 
-						updateContainerStyle : function(style) {
-							angular.extend(this.containerStyle, style);
-						},
-						serialize : function() {
-							return _.pick(this, [ 'title', 'name', 'style',
-									'size', 'dataModelOptions', 'attrs',
-									'storageHash', 'sizeX', 'sizeY', 'row',
-									'col' ]);
-						}
-					};
+      updateContainerStyle: function (style) {
+        angular.extend(this.containerStyle, style);
+      },
+      serialize: function() {
+        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
+      }
+    };
 
-					return WidgetModel;
-				});
+    return WidgetModel;
+  });
