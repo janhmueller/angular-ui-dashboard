@@ -83,7 +83,7 @@ angular.module('ui.dashboard')
     				}
     			}
         };
-        scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
+        scope.gridsterOptions = angular.merge({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
       }],
       link: function (scope) {
