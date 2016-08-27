@@ -72,7 +72,7 @@ angular.module('ui.dashboard')
     						height : newHeight,
     						width : newWidth
     					});
-    					// $scope.$emit('widgetChanged', widget);
+    					$scope.$emit('widgetChanged', widget);
     				}
     			},
     			draggable : {
