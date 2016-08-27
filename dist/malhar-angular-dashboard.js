@@ -83,7 +83,7 @@ angular.module('ui.dashboard')
     				}
     			}
         };
-        scope.gridsterOptions = angular.extend({}, gridsterDefaults, scope.options.gridsterOptions || {});
+        scope.gridsterOptions = angular.merge({}, gridsterDefaults, scope.options.gridsterOptions || {});
 
       }],
       link: function (scope) {
@@ -817,7 +817,7 @@ angular.module('ui.dashboard')
         angular.extend(this.containerStyle, style);
       },
       serialize: function() {
-        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
+        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash', 'row', 'col', 'sizeX', 'sizeY']);
       }
     };
 
