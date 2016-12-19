@@ -11,6 +11,7 @@
   "dependencies": {
     "angular": ">=1.4",
     "angular-gridster": "latest",
+    "angular-material" : "latest",
     "lodash": ">=4.5.1"
   },
   "devDependencies": {
