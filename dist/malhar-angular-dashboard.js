@@ -15,11 +15,11 @@
  */
 'use strict';
 
-angular.module('ui.dashboard', ['ui.bootstrap', 'gridster']);
+angular.module('ui.dashboard', ['ngMaterial', 'gridster']);
 
 angular.module('ui.dashboard')
 
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$uibModal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $uibModal, DashboardState, $log) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$mdDialog', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $mdDialog, DashboardState, $log) {
 
     return {
       restrict: 'A',
@@ -76,8 +76,8 @@ angular.module('ui.dashboard')
     				}
     			},
     			draggable : {
-    				enabled : true, 
-    				handle : '.widget-header', 
+    				enabled : true,
+    				handle : '.widget-header',
     				stop : function(event, element, widget) {
     					scope.$emit('widgetChanged', widget);
     				}
@@ -165,7 +165,7 @@ angular.module('ui.dashboard')
               return widget;
             }
           };
-          
+/*
           // Create the modal
           var modalInstance = $uibModal.open(options);
           var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
@@ -182,13 +182,13 @@ angular.module('ui.dashboard')
               scope.$emit('widgetChanged', widget);
             },
             function (reason) {
-              
+
               // Call the dismiss callback
               onDismiss(reason, scope);
 
             }
           );
-
+*/
         };
 
         /**
@@ -516,8 +516,8 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
-    function(LayoutStorage, $timeout, $uibModal) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$mdDialog',
+    function(LayoutStorage, $timeout, $mdDialog) {
       return {
         scope: true,
         templateUrl: function(element, attr) {
@@ -548,10 +548,11 @@ angular.module('ui.dashboard')
           };
 
           scope.makeLayoutActive = function(layout) {
-
+/*
             var current = layoutStorage.getActiveLayout();
 
             if (current && current.dashboard.unsavedChangeCount) {
+
               var modalInstance = $uibModal.open({
                 templateUrl: 'template/SaveChangesModal.html',
                 resolve: {
@@ -575,7 +576,7 @@ angular.module('ui.dashboard')
             } else {
               scope._makeLayoutActive(layout);
             }
-
+*/
           };
 
           scope._makeLayoutActive = function(layout) {
@@ -645,6 +646,7 @@ angular.module('ui.dashboard')
       };
     }
   ]);
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -664,19 +666,21 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
-    
+  .controller('SaveChangesModalCtrl', ['$scope', 'layout', function ($scope, layout) {
+//      .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
+
     // add layout to scope
     $scope.layout = layout;
 
     $scope.ok = function () {
-      $uibModalInstance.close();
+//      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $uibModalInstance.dismiss();
+//      $uibModalInstance.dismiss();
     };
   }]);
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -696,7 +700,8 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
+//  .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
+      .controller('WidgetSettingsCtrl', ['$scope', 'widget', function ($scope, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -704,13 +709,14 @@ angular.module('ui.dashboard')
     $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
-      $uibModalInstance.close($scope.result);
+//      $uibModalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
-      $uibModalInstance.dismiss('cancel');
+//      $uibModalInstance.dismiss('cancel');
     };
   }]);
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
