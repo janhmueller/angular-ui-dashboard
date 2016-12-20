@@ -68,29 +68,6 @@ angular.module('app')
       storage: $window.localStorage,
       storageId: 'custom-settings',
 
-      /*
-      // Overrides default $uibModal options.
-      // This can also be set on individual
-      // widget definition objects (see above).
-      settingsModalOptions: {
-        // This will completely override the modal template for all widgets.
-        // You also have the option to add to the default modal template with settingsModalOptions.partialTemplateUrl (see "configurable widget" above)
-        templateUrl: 'template/customSettingsTemplate.html'
-        // We could pass a custom controller name here to be used
-        // with the widget settings dialog, but for this demo we
-        // will just keep the default.
-        //
-        // controller: 'CustomSettingsModalCtrl'
-        //
-        // Other options passed to $uibModal.open can be put here,
-        // eg:
-        //
-        // backdrop: false,
-        // keyboard: false
-        //
-        // @see http://angular-ui.github.io/bootstrap/#/modal  <-- heads up: routing on their site was broken as of this writing
-      },
-      */
 
       // Called when a widget settings dialog is closed
       // by the "ok" method (i.e., the promise is resolved
@@ -113,7 +90,7 @@ angular.module('app')
       }
     };
   })
-  .controller('WidgetSpecificSettingsCtrl', function ($scope, $uibModalInstance, widget) {
+  .controller('WidgetSpecificSettingsCtrl', [ '$mdDialog', ($scope, $mdDialog, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -122,11 +99,11 @@ angular.module('app')
 
     $scope.ok = function () {
       console.log('calling ok from widget-specific settings controller!');
-      $uibModalInstance.close($scope.result);
+      $mdDialog.hide($scope.result);
     };
 
     $scope.cancel = function () {
       console.log('calling cancel from widget-specific settings controller!');
-      $uibModalInstance.dismiss('cancel');
+      $mdDialog.cancel();
     };
-  })
+  }]);

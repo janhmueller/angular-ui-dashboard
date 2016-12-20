@@ -17,17 +17,16 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', 'layout', function ($scope, layout) {
-//      .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
+      .controller('SaveChangesModalCtrl', ['$scope', '$mdDialog', 'layout', function ($scope, $mdDialog, layout) {
 
     // add layout to scope
     $scope.layout = layout;
 
     $scope.ok = function () {
-//      $uibModalInstance.close();
+      $mdDialog.hide();
     };
 
     $scope.cancel = function () {
-//      $uibModalInstance.dismiss();
+      $mdDialog.cancel();
     };
   }]);
