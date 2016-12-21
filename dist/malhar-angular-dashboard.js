@@ -19,7 +19,7 @@ angular.module('ui.dashboard', ['ngMaterial', 'gridster']);
 
 angular.module('ui.dashboard')
 
-.directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$mdDialog', 'DashboardState', '$log', function(WidgetModel, WidgetDefCollection, $mdDialog, DashboardState, $log) {
+.directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$mdDialog', 'DashboardState', '$log',  '$controller', function(WidgetModel, WidgetDefCollection, $mdDialog, DashboardState, $log,  $controller) {
 
   return {
     restrict: 'A',
@@ -153,31 +153,27 @@ angular.module('ui.dashboard')
        */
       scope.openWidgetSettings = function(widget) {
 
-        // Set up $uibModal options
+        // Set up modal options
         var options = _.defaults({
-            scope: scope
+            scope: scope,
+            preserveScope: true
           },
           widget.settingsModalOptions,
           scope.options.settingsModalOptions);
 
         // Ensure widget is resolved
-        options.resolve = {
+        options.locals = {
           widget: function() {
             return widget;
-          }
+          },
+          options : widget.settingsLocals
         };
 
         // Create the modal
-        var modalInstance = $uibModal.open(options);
         var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
         var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
         var dlg = $mdDialog.show(options);
-
-        dlg.then(function(result) {
-          data.value[i] = result;
-        });
-
 
         // Set resolve and reject callbacks for the result promise
         dlg.then(
