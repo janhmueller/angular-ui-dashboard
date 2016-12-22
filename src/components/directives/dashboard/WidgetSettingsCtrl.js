@@ -18,7 +18,7 @@
 
 angular.module('ui.dashboard')
 //  .controller('WidgetSettingsCtrl', ['$scope', '$mdDialog', 'widget', function ($scope, $mdDialog, widget) {
-      .controller('WidgetSettingsCtrl', ['$scope', 'widget', function ($scope, widget) {
+      .controller('WidgetSettingsCtrl', ['$scope', 'widget', '$mdDialog', function ($scope, widget, $mdDialog) {
     // add widget to scope
     $scope.widget = widget;
 
