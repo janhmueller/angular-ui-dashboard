@@ -155,8 +155,8 @@ angular.module('ui.dashboard')
 
         // Set up modal options
         var options = _.defaults({
-            scope: scope,
-            preserveScope: true
+//            scope: scope,
+            preserveScope: false
           },
           widget.settingsModalOptions,
           scope.options.settingsModalOptions);
