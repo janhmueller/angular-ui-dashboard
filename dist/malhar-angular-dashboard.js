@@ -418,7 +418,7 @@ angular.module('ui.dashboard')
         if (widget.templateUrl) {
 
           // Use ng-include for templateUrl
-          templateString = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
+          templateString = '<div class="widget-template-include" ng-include="\'' + widget.templateUrl + '\'"></div>';
 
         } else if (widget.template) {
 
@@ -489,8 +489,8 @@ angular.module('ui.dashboard')
         // widget placeholder is the first (and only) child of .widget-content
         return element.find('.widget-content');
       };
- 
-      
+
+
       $scope.$on('gridster-item-transition-end', function(event, item) {
 			$scope.$broadcast('widgetResized', {
 				height : item.getElementSizeY(),
@@ -500,6 +500,7 @@ angular.module('ui.dashboard')
     	});
      }
   ]);
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
